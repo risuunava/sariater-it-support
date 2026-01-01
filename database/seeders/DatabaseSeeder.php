@@ -20,15 +20,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@sariater.com',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'phone' => '0811-1111-1111',
+            'department' => 'IT Support',
             'email_verified_at' => now(),
         ]);
 
-        // Buat beberapa user karyawan
+        // Buat beberapa user karyawan DENGAN DATA LENGKAP
         $karyawan1 = User::create([
             'name' => 'Budi Santoso',
             'email' => 'budi@sariater.com',
             'password' => Hash::make('karyawan123'),
             'role' => 'karyawan',
+            'phone' => '0812-3456-7890',
+            'department' => 'Marketing',
             'email_verified_at' => now(),
         ]);
 
@@ -37,6 +41,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'siti@sariater.com',
             'password' => Hash::make('karyawan123'),
             'role' => 'karyawan',
+            'phone' => '0813-4567-8901',
+            'department' => 'HR',
             'email_verified_at' => now(),
         ]);
 
@@ -45,6 +51,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'agus@sariater.com',
             'password' => Hash::make('karyawan123'),
             'role' => 'karyawan',
+            'phone' => '0814-5678-9012',
+            'department' => 'IT',
             'email_verified_at' => now(),
         ]);
 
@@ -53,6 +61,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'dewi@sariater.com',
             'password' => Hash::make('karyawan123'),
             'role' => 'karyawan',
+            'phone' => '0815-6789-0123',
+            'department' => 'Finance',
             'email_verified_at' => now(),
         ]);
 
@@ -63,64 +73,88 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Printer tidak bisa mencetak',
                 'description' => 'Printer di ruang Marketing (Epson L3210) tidak bisa mencetak. Sudah dicek kabel dan koneksi, masih tidak berfungsi. Error lampu merah berkedip.',
                 'status' => 'pending',
+                'priority' => 'medium',
                 'technician' => null,
                 'admin_response' => null,
+                'created_at' => now()->subDays(5),
+                'updated_at' => now()->subDays(5),
             ],
             [
                 'user_id' => $karyawan2->id,
                 'title' => 'Laptop lambat dan sering hang',
                 'description' => 'Laptop Dell Latitude 3420 sangat lambat saat membuka aplikasi dan sering hang. Sudah restart beberapa kali. Digunakan untuk kerja harian.',
                 'status' => 'progress',
+                'priority' => 'high',
                 'technician' => 'John Doe',
                 'admin_response' => 'Sudah dicek, kemungkinan perlu upgrade RAM dari 4GB ke 8GB. Kami akan jadwalkan untuk upgrade.',
+                'created_at' => now()->subDays(3),
+                'updated_at' => now()->subDays(2),
             ],
             [
                 'user_id' => $karyawan3->id,
                 'title' => 'Email tidak bisa terkirim',
                 'description' => 'Email dengan attachment file PDF (ukuran 5MB) tidak bisa terkirim ke klien. Error message: "Connection timed out".',
                 'status' => 'done',
+                'priority' => 'medium',
                 'technician' => 'Jane Smith',
                 'admin_response' => 'Masalah sudah diperbaiki. Ada setting SMTP yang perlu disesuaikan. Sekarang email sudah bisa dikirim dengan attachment sampai 10MB.',
+                'created_at' => now()->subDays(10),
+                'updated_at' => now()->subDays(8),
             ],
             [
                 'user_id' => $karyawan1->id,
                 'title' => 'WiFi di ruang meeting lemah',
                 'description' => 'Sinyal WiFi di ruang meeting lantai 3 sangat lemah. Sulit untuk video conference. Sudah dicoba di beberapa spot.',
                 'status' => 'pending',
+                'priority' => 'high',
                 'technician' => null,
                 'admin_response' => null,
+                'created_at' => now()->subDays(2),
+                'updated_at' => now()->subDays(2),
             ],
             [
                 'user_id' => $karyawan4->id,
                 'title' => 'Software accounting error',
                 'description' => 'Software Accurate error ketika ingin cetak laporan neraca. Muncul pesan "Database connection failed". Software versi 5.',
                 'status' => 'progress',
+                'priority' => 'high',
                 'technician' => 'Robert Johnson',
                 'admin_response' => 'Kami sedang cek koneksi database. Untuk sementara, backup data harian dulu.',
+                'created_at' => now()->subDays(1),
+                'updated_at' => now()->subDays(1),
             ],
             [
                 'user_id' => $karyawan2->id,
                 'title' => 'Monitor flicker',
                 'description' => 'Monitor di meja saya (LG 24 inch) sering flicker terutama saat digunakan lebih dari 2 jam. Sudah ganti kabel HDMI, masih sama.',
                 'status' => 'done',
+                'priority' => 'low',
                 'technician' => 'Lisa Wang',
                 'admin_response' => 'Monitor sudah diganti dengan yang baru. Monitor lama akan dikirim untuk service.',
+                'created_at' => now()->subDays(15),
+                'updated_at' => now()->subDays(12),
             ],
             [
                 'user_id' => $karyawan3->id,
                 'title' => 'Akses shared folder terbatas',
                 'description' => 'Tidak bisa akses shared folder "Project_2024" di server. Permission denied. Padahal kemarin masih bisa.',
                 'status' => 'pending',
+                'priority' => 'medium',
                 'technician' => null,
                 'admin_response' => null,
+                'created_at' => now()->subDays(7),
+                'updated_at' => now()->subDays(7),
             ],
             [
                 'user_id' => $karyawan4->id,
                 'title' => 'Keyboard tidak responsif',
                 'description' => 'Keyboard wireless Logitech tiba-tiba tidak responsif. Sudah ganti baterai, masih tidak berfungsi.',
                 'status' => 'done',
+                'priority' => 'low',
                 'technician' => 'John Doe',
                 'admin_response' => 'Keyboard sudah diganti dengan yang baru. Receiver mungkin rusak.',
+                'created_at' => now()->subDays(20),
+                'updated_at' => now()->subDays(18),
             ],
         ];
 
@@ -144,6 +178,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Password: karyawan123');
         $this->command->info('');
         $this->command->info('Email: siti@sariater.com');
+        $this->command->info('Password: karyawan123');
+        $this->command->info('');
+        $this->command->info('Email: agus@sariater.com');
+        $this->command->info('Password: karyawan123');
+        $this->command->info('');
+        $this->command->info('Email: dewi@sariater.com');
         $this->command->info('Password: karyawan123');
         $this->command->info('');
         $this->command->info('====================================');

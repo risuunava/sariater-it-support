@@ -1,296 +1,368 @@
 @extends('layouts.app')
 
 @section('title', 'Kelola Laporan')
+@section('page-title', 'Kelola Laporan')
+@section('page-description', 'Update status dan respon untuk laporan IT Support')
+
+@section('header-actions')
+<div class="flex items-center space-x-3">
+    <a href="{{ route('admin.tickets') }}" class="btn-secondary">
+        <i class="fas fa-arrow-left mr-2"></i>Kembali
+    </a>
+    <button onclick="window.print()" class="btn-secondary">
+        <i class="fas fa-print mr-2"></i>Cetak
+    </button>
+</div>
+@endsection
 
 @section('content')
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">
-                        <i class="fas fa-cogs mr-3 text-blue-600"></i>
-                        Kelola Laporan
-                    </h1>
-                    <p class="text-gray-600 mt-2">
-                        ID: #{{ str_pad($ticket->id, 6, '0', STR_PAD_LEFT) }}
-                    </p>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column - Ticket Details & Actions -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Ticket Header -->
+        <div class="bg-white rounded-2xl shadow-soft overflow-hidden">
+            <div class="px-6 py-5 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                            <i class="fas fa-ticket-alt text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading text-xl font-bold text-gray-900">{{ $ticket->title }}</h2>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-sm text-gray-600">ID: #{{ str_pad($ticket->id, 6, '0', STR_PAD_LEFT) }}</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                <span class="text-sm text-gray-600">Dibuat: {{ $ticket->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="status-badge text-lg {{ $ticket->getStatusColor() }} shadow-md">
+                        {{ $ticket->getStatusText() }}
+                    </span>
                 </div>
-                <a href="{{ route('admin.tickets') }}" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Kembali
+            </div>
+            
+            <div class="p-6">
+                <!-- Description -->
+                <div class="mb-8">
+                    <h3 class="font-heading font-semibold text-gray-900 mb-3">Deskripsi Masalah</h3>
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <p class="text-gray-700 whitespace-pre-line">{{ $ticket->description }}</p>
+                    </div>
+                </div>
+                
+                <!-- Reporter Info -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
+                    <h3 class="font-heading font-semibold text-gray-900 mb-4">Informasi Pelapor</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                {{ substr($ticket->user->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Nama</p>
+                                <p class="font-medium text-gray-900">{{ $ticket->user->name }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Email</p>
+                                <p class="font-medium text-gray-900">{{ $ticket->user->email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Actions -->
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <i class="fas fa-cogs text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-heading font-semibold text-gray-900">Update Status & Respon</h3>
+                    <p class="text-sm text-gray-600">Kelola laporan dan berikan respon</p>
+                </div>
+            </div>
+            
+            <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div class="space-y-6">
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            <i class="fas fa-flag mr-2"></i>Status Laporan
+                        </label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="status" value="pending" 
+                                       class="sr-only peer" 
+                                       {{ $ticket->status === 'pending' ? 'checked' : '' }}>
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50 hover:bg-gray-50 transition hover-lift">
+                                    <i class="fas fa-clock text-yellow-500 text-xl mb-2"></i>
+                                    <p class="font-medium text-gray-900">Pending</p>
+                                    <p class="text-xs text-gray-500 mt-1">Menunggu</p>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="status" value="progress" 
+                                       class="sr-only peer" 
+                                       {{ $ticket->status === 'progress' ? 'checked' : '' }}>
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-gray-50 transition hover-lift">
+                                    <i class="fas fa-cogs text-blue-500 text-xl mb-2"></i>
+                                    <p class="font-medium text-gray-900">Progress</p>
+                                    <p class="text-xs text-gray-500 mt-1">Diproses</p>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="status" value="done" 
+                                       class="sr-only peer" 
+                                       {{ $ticket->status === 'done' ? 'checked' : '' }}>
+                                <div class="p-4 border-2 border-gray-200 rounded-xl text-center peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-gray-50 transition hover-lift">
+                                    <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
+                                    <p class="font-medium text-gray-900">Selesai</p>
+                                    <p class="text-xs text-gray-500 mt-1">Diselesaikan</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Technician Assignment -->
+                    <div>
+                        <label for="technician" class="block text-sm font-medium text-gray-900 mb-2">
+                            <i class="fas fa-user-cog mr-2"></i>Penugasan Teknisi
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-users text-gray-400"></i>
+                            </div>
+                            <select id="technician" name="technician" 
+                                    class="input-modern pl-10">
+                                <option value="">Pilih Teknisi...</option>
+                                @foreach($technicians as $tech)
+                                <option value="{{ $tech }}" {{ $ticket->technician == $tech ? 'selected' : '' }}>
+                                    {{ $tech }}
+                                </option>
+                                @endforeach
+                                <option value="other">+ Tambah teknisi baru</option>
+                            </select>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Tetapkan teknisi yang bertanggung jawab</p>
+                    </div>
+
+                    <!-- Admin Response -->
+                    <div>
+                        <label for="admin_response" class="block text-sm font-medium text-gray-900 mb-2">
+                            <i class="fas fa-comment-dots mr-2"></i>Respon & Catatan
+                        </label>
+                        <div class="relative">
+                            <div class="absolute top-3 left-3 pointer-events-none">
+                                <i class="fas fa-edit text-gray-400"></i>
+                            </div>
+                            <textarea id="admin_response" 
+                                      name="admin_response" 
+                                      rows="8"
+                                      class="input-modern pl-10 pt-3"
+                                      placeholder="Berikan respon untuk pelapor. Anda dapat memberikan update progress, solusi, atau instruksi selanjutnya...">{{ old('admin_response', $ticket->admin_response) }}</textarea>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Respon ini akan dikirim ke email pelapor</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-6 border-t border-gray-200">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Right Column - Sidebar -->
+    <div class="space-y-6">
+        <!-- Quick Actions -->
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div>
+                    <h3 class="font-heading font-semibold text-lg">Quick Actions</h3>
+                    <p class="text-blue-100 text-sm">Aksi cepat untuk laporan ini</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST" class="inline-block w-full">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="progress">
+                    <input type="hidden" name="technician" value="{{ Auth::user()->name }}">
+                    <input type="hidden" name="admin_response" value="Laporan sedang kami proses. Tim IT Support akan segera menindaklanjuti.">
+                    <button type="submit" 
+                            class="w-full flex items-center justify-center px-4 py-3 bg-white/20 hover:bg-white/30 rounded-xl transition group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-medium">Ambil & Proses</p>
+                                <p class="text-xs text-blue-100">Tandai sebagai diproses</p>
+                            </div>
+                        </div>
+                    </button>
+                </form>
+                
+                <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST" class="inline-block w-full">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="done">
+                    <input type="hidden" name="admin_response" value="Laporan telah diselesaikan. Terima kasih telah melaporkan. Jika ada masalah lain, silakan buat laporan baru.">
+                    <button type="submit" 
+                            class="w-full flex items-center justify-center px-4 py-3 bg-white/20 hover:bg-white/30 rounded-xl transition group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-medium">Tandai Selesai</p>
+                                <p class="text-xs text-blue-100">Selesaikan laporan</p>
+                            </div>
+                        </div>
+                    </button>
+                </form>
+                
+                <a href="mailto:{{ $ticket->user->email }}" 
+                   class="flex items-center justify-center px-4 py-3 bg-white/20 hover:bg-white/30 rounded-xl transition group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-medium">Email Pelapor</p>
+                            <p class="text-xs text-blue-100">{{ $ticket->user->email }}</p>
+                        </div>
+                    </div>
                 </a>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column - Ticket Info -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Ticket Details -->
-                <div class="bg-white rounded-xl shadow">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                        <h2 class="text-xl font-semibold text-gray-800">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Detail Laporan
-                        </h2>
+        
+        <!-- Timeline -->
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+            <h3 class="font-heading font-semibold text-gray-900 mb-6">Timeline</h3>
+            <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                            <i class="fas fa-plus text-white text-xs"></i>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $ticket->title }}</h3>
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <p class="text-gray-700 whitespace-pre-line">{{ $ticket->description }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <p class="text-sm text-gray-500">Pelapor</p>
-                                <p class="font-medium text-gray-900">{{ $ticket->user->name }}</p>
-                                <p class="text-sm text-gray-600">{{ $ticket->user->email }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Status Saat Ini</p>
-                                <span class="status-badge text-lg {{ $ticket->getStatusColor() }}">
-                                    {{ $ticket->getStatusText() }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="border-t pt-4">
-                            <p class="text-sm text-gray-500 mb-2">Timeline</p>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 w-3 h-3 rounded-full bg-blue-500"></div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-900">Dibuat</p>
-                                        <p class="text-xs text-gray-500">{{ $ticket->created_at->format('d F Y H:i') }}</p>
-                                    </div>
-                                </div>
-                                @if($ticket->status !== 'pending')
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 w-3 h-3 rounded-full bg-green-500"></div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-900">Diambil Admin</p>
-                                        <p class="text-xs text-gray-500">{{ $ticket->updated_at->format('d F Y H:i') }}</p>
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Laporan dibuat</p>
+                        <p class="text-xs text-gray-500">{{ $ticket->created_at->format('d M Y, H:i') }}</p>
                     </div>
                 </div>
-
-                <!-- Admin Actions -->
-                <div class="bg-white rounded-xl shadow">
-                    <div class="px-6 py-4 border-b border-blue-200 bg-blue-50">
-                        <h2 class="text-xl font-semibold text-blue-800">
-                            <i class="fas fa-edit mr-2"></i>
-                            Update Status & Respon
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            
-                            <div class="space-y-6">
-                                <!-- Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-flag mr-2"></i>Status Laporan
-                                    </label>
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="status" value="pending" 
-                                                   class="sr-only peer" 
-                                                   {{ $ticket->status === 'pending' ? 'checked' : '' }}>
-                                            <div class="p-4 border-2 border-gray-200 rounded-lg text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50 hover:bg-gray-50 transition">
-                                                <i class="fas fa-clock text-yellow-500 text-xl mb-2"></i>
-                                                <p class="font-medium">Pending</p>
-                                            </div>
-                                        </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="status" value="progress" 
-                                                   class="sr-only peer" 
-                                                   {{ $ticket->status === 'progress' ? 'checked' : '' }}>
-                                            <div class="p-4 border-2 border-gray-200 rounded-lg text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-gray-50 transition">
-                                                <i class="fas fa-cogs text-blue-500 text-xl mb-2"></i>
-                                                <p class="font-medium">Progress</p>
-                                            </div>
-                                        </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="status" value="done" 
-                                                   class="sr-only peer" 
-                                                   {{ $ticket->status === 'done' ? 'checked' : '' }}>
-                                            <div class="p-4 border-2 border-gray-200 rounded-lg text-center peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-gray-50 transition">
-                                                <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
-                                                <p class="font-medium">Selesai</p>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Technician -->
-                                <div>
-                                    <label for="technician" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-user-cog mr-2"></i>Teknisi Penanggung Jawab
-                                    </label>
-                                    <select id="technician" name="technician" 
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                                        <option value="">Pilih Teknisi</option>
-                                        @foreach($technicians as $tech)
-                                        <option value="{{ $tech }}" {{ $ticket->technician == $tech ? 'selected' : '' }}>
-                                            {{ $tech }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    <p class="mt-1 text-sm text-gray-500">Pilih teknisi yang menangani laporan ini</p>
-                                </div>
-
-                                <!-- Admin Response -->
-                                <div>
-                                    <label for="admin_response" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-comment-dots mr-2"></i>Respon Admin
-                                    </label>
-                                    <textarea id="admin_response" 
-                                              name="admin_response" 
-                                              rows="6"
-                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                              placeholder="Berikan respon atau instruksi untuk pelapor...">{{ old('admin_response', $ticket->admin_response) }}</textarea>
-                                    <p class="mt-1 text-sm text-gray-500">Respon ini akan dilihat oleh pelapor</p>
-                                </div>
-
-                                <!-- Submit -->
-                                <div class="flex justify-end pt-6 border-t border-gray-200">
-                                    <button type="submit" 
-                                            class="px-8 py-3 gradient-bg text-white font-medium rounded-lg hover:opacity-90 transition">
-                                        <i class="fas fa-save mr-2"></i>Simpan Perubahan
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column - Sidebar -->
-            <div class="space-y-6">
-                <!-- Current Info -->
-                <div class="bg-white rounded-xl shadow">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                        <h2 class="text-xl font-semibold text-gray-800">
-                            <i class="fas fa-clipboard-check mr-2"></i>
-                            Informasi Saat Ini
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Status</p>
-                                <span class="status-badge {{ $ticket->getStatusColor() }}">
-                                    {{ $ticket->getStatusText() }}
-                                </span>
-                            </div>
-                            
-                            @if($ticket->technician)
-                            <div>
-                                <p class="text-sm text-gray-500">Teknisi</p>
-                                <p class="font-medium text-gray-900">{{ $ticket->technician }}</p>
-                            </div>
-                            @endif
-                            
-                            <div>
-                                <p class="text-sm text-gray-500">Durasi</p>
-                                <p class="font-medium text-gray-900">
-                                    {{ $ticket->created_at->diffForHumans() }}
-                                </p>
-                            </div>
+                
+                @if($ticket->status !== 'pending')
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center">
+                            <i class="fas fa-user-cog text-white text-xs"></i>
                         </div>
                     </div>
-                </div>
-
-                <!-- Previous Response -->
-                @if($ticket->admin_response)
-                <div class="bg-white rounded-xl shadow">
-                    <div class="px-6 py-4 border-b border-green-200 bg-green-50">
-                        <h2 class="text-xl font-semibold text-green-800">
-                            <i class="fas fa-history mr-2"></i>
-                            Respon Sebelumnya
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                            <p class="text-gray-700 whitespace-pre-line">{{ $ticket->admin_response }}</p>
-                        </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Diambil oleh Admin</p>
+                        <p class="text-xs text-gray-500">{{ $ticket->updated_at->format('d M Y, H:i') }}</p>
                     </div>
                 </div>
                 @endif
-
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-xl shadow">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                        <h2 class="text-xl font-semibold text-gray-800">
-                            <i class="fas fa-bolt mr-2"></i>
-                            Aksi Cepat
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-3">
-                            <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST" class="inline-block w-full">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="status" value="progress">
-                                <input type="hidden" name="technician" value="{{ Auth::user()->name }}">
-                                <button type="submit" 
-                                        class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition">
-                                    <i class="fas fa-play mr-3"></i>
-                                    Ambil & Proses
-                                </button>
-                            </form>
-                            
-                            <form action="{{ route('admin.ticket.update.status', $ticket->id) }}" method="POST" class="inline-block w-full">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="status" value="done">
-                                <input type="hidden" name="admin_response" value="Laporan telah diselesaikan.">
-                                <button type="submit" 
-                                        class="w-full flex items-center justify-center px-4 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition">
-                                    <i class="fas fa-check mr-3"></i>
-                                    Tandai Selesai
-                                </button>
-                            </form>
+                
+                @if($ticket->technician)
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                            <i class="fas fa-user-hard-hat text-white text-xs"></i>
                         </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Ditugaskan ke {{ $ticket->technician }}</p>
+                        <p class="text-xs text-gray-500">Teknisi penanggung jawab</p>
                     </div>
                 </div>
-
-                <!-- Contact Info -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                    <h3 class="font-semibold text-blue-800 mb-3">
-                        <i class="fas fa-address-card mr-2"></i>
-                        Kontak Pelapor
-                    </h3>
-                    <div class="space-y-2">
-                        <p class="text-sm">
-                            <span class="text-gray-600">Nama:</span>
-                            <span class="font-medium ml-2">{{ $ticket->user->name }}</span>
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-gray-600">Email:</span>
-                            <span class="font-medium ml-2">{{ $ticket->user->email }}</span>
-                        </p>
-                        <div class="mt-4 pt-4 border-t border-blue-200">
-                            <a href="mailto:{{ $ticket->user->email }}" 
-                               class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-envelope mr-2"></i>
-                                Kirim Email
-                            </a>
+                @endif
+                
+                @if($ticket->status === 'done')
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs"></i>
                         </div>
                     </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Diselesaikan</p>
+                        <p class="text-xs text-gray-500">{{ $ticket->updated_at->format('d M Y, H:i') }}</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+        
+        <!-- Stats Card -->
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+            <h3 class="font-heading font-semibold text-gray-900 mb-4">Statistik Laporan</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Durasi</span>
+                    <span class="font-medium text-gray-900">
+                        {{ $ticket->created_at->diffForHumans(null, true) }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Priority</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">Medium</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Category</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Hardware</span>
+                </div>
+                <div class="pt-4 border-t border-gray-100">
+                    <p class="text-sm text-gray-600 mb-2">Update Terakhir</p>
+                    <p class="text-sm font-medium text-gray-900">{{ $ticket->updated_at->diffForHumans() }}</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- JavaScript for Technician Selection -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const technicianSelect = document.getElementById('technician');
+        const newTechnicianInput = document.createElement('input');
+        newTechnicianInput.type = 'text';
+        newTechnicianInput.name = 'technician_new';
+        newTechnicianInput.placeholder = 'Nama teknisi baru';
+        newTechnicianInput.className = 'input-modern mt-2 hidden';
+        
+        technicianSelect.parentNode.appendChild(newTechnicianInput);
+        
+        technicianSelect.addEventListener('change', function() {
+            if (this.value === 'other') {
+                newTechnicianInput.classList.remove('hidden');
+                newTechnicianInput.required = true;
+            } else {
+                newTechnicianInput.classList.add('hidden');
+                newTechnicianInput.required = false;
+            }
+        });
+    });
+</script>
 @endsection
