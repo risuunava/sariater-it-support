@@ -178,44 +178,44 @@
                     <div>
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-gray-600">Under 1 hour</span>
-                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['under_1h'] }}</span>
+                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['under_1h'] ?? 0 }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div class="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500" 
-                                 style="width: {{ $tickets->count() > 0 ? ($resolutionData['distribution']['under_1h'] / $tickets->count()) * 100 : 0 }}%"></div>
+                                 style="width: {{ $tickets->count() > 0 ? (($resolutionData['distribution']['under_1h'] ?? 0) / $tickets->count()) * 100 : 0 }}%"></div>
                         </div>
                     </div>
                     
                     <div>
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-gray-600">1-4 hours</span>
-                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['1_4h'] }}</span>
+                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['1_4h'] ?? 0 }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div class="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-500" 
-                                 style="width: {{ $tickets->count() > 0 ? ($resolutionData['distribution']['1_4h'] / $tickets->count()) * 100 : 0 }}%"></div>
+                                 style="width: {{ $tickets->count() > 0 ? (($resolutionData['distribution']['1_4h'] ?? 0) / $tickets->count()) * 100 : 0 }}%"></div>
                         </div>
                     </div>
                     
                     <div>
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-gray-600">4-24 hours</span>
-                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['4_24h'] }}</span>
+                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['4_24h'] ?? 0 }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500" 
-                                 style="width: {{ $tickets->count() > 0 ? ($resolutionData['distribution']['4_24h'] / $tickets->count()) * 100 : 0 }}%"></div>
+                                 style="width: {{ $tickets->count() > 0 ? (($resolutionData['distribution']['4_24h'] ?? 0) / $tickets->count()) * 100 : 0 }}%"></div>
                         </div>
                     </div>
                     
                     <div>
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-gray-600">Over 24 hours</span>
-                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['over_24h'] }}</span>
+                            <span class="font-medium text-gray-900">{{ $resolutionData['distribution']['over_24h'] ?? 0 }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div class="h-full rounded-full bg-gradient-to-r from-red-400 to-red-500" 
-                                 style="width: {{ $tickets->count() > 0 ? ($resolutionData['distribution']['over_24h'] / $tickets->count()) * 100 : 0 }}%"></div>
+                                 style="width: {{ $tickets->count() > 0 ? (($resolutionData['distribution']['over_24h'] ?? 0) / $tickets->count()) * 100 : 0 }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -340,149 +340,155 @@ document.addEventListener('DOMContentLoaded', function() {
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     const monthlyData = @json($monthlyData);
     
-    new Chart(monthlyCtx, {
-        type: 'bar',
-        data: {
-            labels: monthlyData.map(item => item.month),
-            datasets: [
-                {
-                    label: 'Total',
-                    data: monthlyData.map(item => item.total),
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Done',
-                    data: monthlyData.map(item => item.done),
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderColor: 'rgba(16, 185, 129, 1)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                }
+    if (monthlyCtx) {
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyData.map(item => item.month),
+                datasets: [
+                    {
+                        label: 'Total',
+                        data: monthlyData.map(item => item.total),
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Done',
+                        data: monthlyData.map(item => item.done),
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }
+                ]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     // Category Chart
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     const categoryData = @json($categoryData);
     
-    const categoryLabels = Object.keys(categoryData);
-    const categoryValues = Object.values(categoryData);
-    
-    new Chart(categoryCtx, {
-        type: 'doughnut',
-        data: {
-            labels: categoryLabels,
-            datasets: [{
-                data: categoryValues,
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(139, 92, 246, 0.8)',
-                    'rgba(107, 114, 128, 0.8)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
+    if (categoryCtx) {
+        const categoryLabels = Object.keys(categoryData);
+        const categoryValues = Object.values(categoryData);
+        
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryValues,
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(107, 114, 128, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     // Performance Chart
     const performanceCtx = document.getElementById('performanceChart').getContext('2d');
     const performanceData = @json($performanceTrends);
     
-    new Chart(performanceCtx, {
-        type: 'line',
-        data: {
-            labels: performanceData.map(item => item.week),
-            datasets: [
-                {
-                    label: 'Completion Rate (%)',
-                    data: performanceData.map(item => item.completion_rate),
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Avg. Resolution (hours)',
-                    data: performanceData.map(item => item.avg_resolution),
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
+    if (performanceCtx) {
+        new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: performanceData.map(item => item.week),
+                datasets: [
+                    {
+                        label: 'Completion Rate (%)',
+                        data: performanceData.map(item => item.completion_rate),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Avg. Resolution (hours)',
+                        data: performanceData.map(item => item.avg_resolution),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
             },
-            plugins: {
-                legend: {
-                    position: 'top',
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Completion Rate (%)'
+                        },
+                        min: 0,
+                        max: 100
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Resolution Time (hours)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        min: 0
+                    },
                 }
-            },
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Completion Rate (%)'
-                    },
-                    min: 0,
-                    max: 100
-                },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Resolution Time (hours)'
-                    },
-                    grid: {
-                        drawOnChartArea: false,
-                    },
-                    min: 0
-                },
             }
-        }
-    });
+        });
+    }
 });
 </script>
 @endsection

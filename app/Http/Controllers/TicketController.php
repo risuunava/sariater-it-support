@@ -558,35 +558,40 @@ class TicketController extends Controller
         return $categories;
     }
 
-    private function getResolutionAnalysis($tickets)
-    {
-        $doneTickets = $tickets->where('status', 'done');
-        
-        if ($doneTickets->isEmpty()) {
-            return [
-                'avg_time' => 0,
-                'fastest' => 0,
-                'slowest' => 0,
-                'distribution' => []
-            ];
-        }
-        
-        $resolutionTimes = $doneTickets->map(function($ticket) {
-            return $ticket->created_at->diffInHours($ticket->updated_at);
-        });
-        
+   private function getResolutionAnalysis($tickets)
+{
+    $doneTickets = $tickets->where('status', 'done');
+    
+    if ($doneTickets->isEmpty()) {
         return [
-            'avg_time' => round($resolutionTimes->avg(), 1),
-            'fastest' => $resolutionTimes->min(),
-            'slowest' => $resolutionTimes->max(),
+            'avg_time' => 0,
+            'fastest' => 0,
+            'slowest' => 0,
             'distribution' => [
-                'under_1h' => $resolutionTimes->filter(fn($t) => $t < 1)->count(),
-                '1_4h' => $resolutionTimes->filter(fn($t) => $t >= 1 && $t <= 4)->count(),
-                '4_24h' => $resolutionTimes->filter(fn($t) => $t > 4 && $t <= 24)->count(),
-                'over_24h' => $resolutionTimes->filter(fn($t) => $t > 24)->count(),
+                'under_1h' => 0,
+                '1_4h' => 0,
+                '4_24h' => 0,
+                'over_24h' => 0,
             ]
         ];
     }
+    
+    $resolutionTimes = $doneTickets->map(function($ticket) {
+        return $ticket->created_at->diffInHours($ticket->updated_at);
+    });
+    
+    return [
+        'avg_time' => round($resolutionTimes->avg(), 1),
+        'fastest' => $resolutionTimes->min(),
+        'slowest' => $resolutionTimes->max(),
+        'distribution' => [
+            'under_1h' => $resolutionTimes->filter(fn($t) => $t < 1)->count(),
+            '1_4h' => $resolutionTimes->filter(fn($t) => $t >= 1 && $t <= 4)->count(),
+            '4_24h' => $resolutionTimes->filter(fn($t) => $t > 4 && $t <= 24)->count(),
+            'over_24h' => $resolutionTimes->filter(fn($t) => $t > 24)->count(),
+        ]
+    ];
+}
 
     private function getPerformanceTrends($userId)
     {
