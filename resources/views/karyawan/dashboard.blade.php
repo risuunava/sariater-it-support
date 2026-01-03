@@ -49,124 +49,6 @@
                 </div>
             </form>
         </div>
-        
-        <!-- Desktop Filter Button with Dropdown -->
-        <div class="relative" id="filter-container">
-            <button id="desktop-filter-btn" 
-                    class="flex items-center space-x-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 shadow-sm transition-all relative">
-                <i class="fas fa-filter text-sm"></i>
-                <span>Filter</span>
-                @if(request()->hasAny(['status', 'priority', 'category', 'date_from', 'date_to']))
-                <span class="ml-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                @endif
-            </button>
-            
-            <!-- Filter Dropdown for Desktop (Click to Open) -->
-            <div id="desktop-filter-dropdown" 
-                 class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-200 opacity-0 invisible transition-all duration-300 z-50 transform -translate-y-2">
-                <div class="p-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <i class="fas fa-filter text-blue-600"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">Filter Laporan</h3>
-                                <p class="text-xs text-gray-500">Sesuaikan tampilan Anda</p>
-                            </div>
-                        </div>
-                        <button type="button" 
-                                onclick="closeDesktopFilter()"
-                                class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center">
-                            <i class="fas fa-times text-gray-500"></i>
-                        </button>
-                    </div>
-                    
-                    <form action="{{ route('karyawan.dashboard') }}" method="GET" id="desktop-filter-form" class="space-y-4">
-                        <!-- Search inside filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Cari Laporan</label>
-                            <div class="relative">
-                                <input type="text" 
-                                       name="search" 
-                                       value="{{ request('search') }}"
-                                       class="w-full p-3 pl-10 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                                       placeholder="Ketik judul atau deskripsi...">
-                                <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Status Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="status" value="all" class="sr-only peer" 
-                                           {{ !request('status') || request('status') == 'all' ? 'checked' : '' }}>
-                                    <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 text-xs transition-colors">
-                                        Semua
-                                    </div>
-                                </label>
-                                
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="status" value="pending" class="sr-only peer"
-                                           {{ request('status') == 'pending' ? 'checked' : '' }}>
-                                    <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-700 text-xs transition-colors">
-                                        Pending
-                                    </div>
-                                </label>
-                                
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="status" value="progress" class="sr-only peer"
-                                           {{ request('status') == 'progress' ? 'checked' : '' }}>
-                                    <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 text-xs transition-colors">
-                                        Progress
-                                    </div>
-                                </label>
-                                
-                                <label class="relative cursor-pointer">
-                                    <input type="radio" name="status" value="done" class="sr-only peer"
-                                           {{ request('status') == 'done' ? 'checked' : '' }}>
-                                    <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:text-green-700 text-xs transition-colors">
-                                        Selesai
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Date Range Filter -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
-                                <input type="date" 
-                                       name="date_from" 
-                                       value="{{ request('date_from') }}"
-                                       class="w-full p-2.5 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
-                                <input type="date" 
-                                       name="date_to" 
-                                       value="{{ request('date_to') }}"
-                                       class="w-full p-2.5 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white">
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-2 pt-2">
-                            <a href="{{ route('karyawan.dashboard') }}" 
-                               class="flex-1 py-2.5 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg text-center text-sm hover:bg-gray-200 transition-colors">
-                                Reset Semua
-                            </a>
-                            <button type="submit" 
-                                    class="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg text-sm shadow hover:bg-blue-700 transition-colors">
-                                Terapkan Filter
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection
@@ -782,16 +664,185 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button id="desktop-filter-btn-header" 
-                            class="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-filter mr-2"></i>Filter
-                    </button>
+                    <!-- Filter Button Container with Dropdown -->
+                    <div class="relative" id="ticket-filter-container">
+                        <button id="desktop-filter-btn-header" 
+                                class="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors flex items-center">
+                            <i class="fas fa-filter mr-2"></i>Filter
+                            @if(request()->hasAny(['status', 'priority', 'category', 'date_from', 'date_to']) && !(request('status') == 'all' || !request('status')))
+                            <span class="ml-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                            @endif
+                        </button>
+                        
+                        <!-- Filter Dropdown for Desktop (Click to Open) - PLACED INSIDE TICKET SECTION -->
+                        <div id="desktop-filter-dropdown" 
+                             class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-200 opacity-0 invisible transition-all duration-300 z-[9999] transform -translate-y-2"
+                             style="will-change: transform, opacity;">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                            <i class="fas fa-filter text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-900">Filter Laporan</h3>
+                                            <p class="text-xs text-gray-500">Sesuaikan tampilan Anda</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" 
+                                            onclick="closeDesktopFilter()"
+                                            class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center">
+                                        <i class="fas fa-times text-gray-500"></i>
+                                    </button>
+                                </div>
+                                
+                                <form action="{{ route('karyawan.dashboard') }}" method="GET" id="desktop-filter-form" class="space-y-4">
+                                    <!-- Search inside filter -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Cari Laporan</label>
+                                        <div class="relative">
+                                            <input type="text" 
+                                                   name="search" 
+                                                   value="{{ request('search') }}"
+                                                   class="w-full p-3 pl-10 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white"
+                                                   placeholder="Ketik judul atau deskripsi...">
+                                            <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Status Filter -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <label class="relative cursor-pointer">
+                                                <input type="radio" name="status" value="all" class="sr-only peer" 
+                                                       {{ !request('status') || request('status') == 'all' ? 'checked' : '' }}>
+                                                <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 text-xs transition-colors">
+                                                    Semua
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="relative cursor-pointer">
+                                                <input type="radio" name="status" value="pending" class="sr-only peer"
+                                                       {{ request('status') == 'pending' ? 'checked' : '' }}>
+                                                <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-700 text-xs transition-colors">
+                                                    Pending
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="relative cursor-pointer">
+                                                <input type="radio" name="status" value="progress" class="sr-only peer"
+                                                       {{ request('status') == 'progress' ? 'checked' : '' }}>
+                                                <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 text-xs transition-colors">
+                                                    Progress
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="relative cursor-pointer">
+                                                <input type="radio" name="status" value="done" class="sr-only peer"
+                                                       {{ request('status') == 'done' ? 'checked' : '' }}>
+                                                <div class="p-2 text-center border border-gray-200 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:text-green-700 text-xs transition-colors">
+                                                    Selesai
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Date Range Filter -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+                                            <input type="date" 
+                                                   name="date_from" 
+                                                   value="{{ request('date_from') }}"
+                                                   class="w-full p-2.5 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+                                            <input type="date" 
+                                                   name="date_to" 
+                                                   value="{{ request('date_to') }}"
+                                                   class="w-full p-2.5 bg-gray-50 rounded-lg text-sm border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="flex space-x-2 pt-2">
+                                        <a href="{{ route('karyawan.dashboard') }}" 
+                                           class="flex-1 py-2.5 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg text-center text-sm hover:bg-gray-200 transition-colors">
+                                            Reset Semua
+                                        </a>
+                                        <button type="submit" 
+                                                class="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg text-sm shadow hover:bg-blue-700 transition-colors">
+                                            Terapkan Filter
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <a href="{{ route('karyawan.tickets.create') }}" 
                        class="px-4 py-2 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition-colors">
                         <i class="fas fa-plus mr-2"></i>Buat Baru
                     </a>
                 </div>
             </div>
+            
+            <!-- Active Filters Badges - Desktop -->
+            @if(request()->hasAny(['search', 'status', 'date_from', 'date_to']) && !(request('status') == 'all' || !request('status')))
+            <div class="px-6 py-3 bg-blue-50 border-b border-blue-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-filter text-blue-500 text-sm"></i>
+                        <span class="text-sm font-medium text-blue-700">Filter Aktif:</span>
+                    </div>
+                    <a href="{{ route('karyawan.dashboard') }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                        Hapus Semua
+                    </a>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    @if(request('search'))
+                    <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                        <i class="fas fa-search mr-1.5 text-xs"></i>
+                        "{{ request('search') }}"
+                        <a href="{{ route('karyawan.dashboard', array_merge(request()->except('search'), ['status' => request('status')])) }}" 
+                           class="ml-1.5 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </span>
+                    @endif
+                    
+                    @if(request('status') && request('status') != 'all')
+                    @php
+                        $statusBadgeColors = [
+                            'pending' => 'bg-yellow-100 text-yellow-800',
+                            'progress' => 'bg-blue-100 text-blue-800',
+                            'done' => 'bg-green-100 text-green-800'
+                        ];
+                    @endphp
+                    <span class="inline-flex items-center px-3 py-1 {{ $statusBadgeColors[request('status')] ?? 'bg-gray-100 text-gray-800' }} rounded-full text-xs">
+                        <i class="fas fa-circle mr-1.5 text-xs"></i>
+                        Status: {{ ucfirst(request('status')) }}
+                        <a href="{{ route('karyawan.dashboard', array_merge(request()->except('status'), ['search' => request('search')])) }}" 
+                           class="ml-1.5 hover:opacity-75">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </span>
+                    @endif
+                    
+                    @if(request('date_from') && request('date_to'))
+                    <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                        <i class="fas fa-calendar mr-1.5 text-xs"></i>
+                        {{ \Carbon\Carbon::parse(request('date_from'))->format('d M') }} - {{ \Carbon\Carbon::parse(request('date_to'))->format('d M Y') }}
+                        <a href="{{ route('karyawan.dashboard', array_merge(request()->except(['date_from', 'date_to']))) }}" 
+                           class="ml-1.5 text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            @endif
             
             <!-- Tickets List - Desktop -->
             @if($tickets->isEmpty())
@@ -800,16 +851,30 @@
                 <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-inbox text-gray-400 text-3xl"></i>
                 </div>
-                <h3 class="text-2xl font-semibold text-gray-900 mb-3">Belum ada laporan</h3>
-                <p class="text-gray-500 text-lg mb-8">Mulai dengan membuat laporan pertama Anda</p>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-3">
+                    @if(request()->hasAny(['search', 'status', 'date_from', 'date_to']))
+                    Tidak ada laporan yang sesuai dengan filter
+                    @else
+                    Belum ada laporan
+                    @endif
+                </h3>
+                <p class="text-gray-500 text-lg mb-8">
+                    @if(request()->hasAny(['search', 'status', 'date_from', 'date_to']))
+                    Coba ubah filter atau hapus filter untuk melihat semua laporan
+                    @else
+                    Mulai dengan membuat laporan pertama Anda
+                    @endif
+                </p>
                 <div class="flex justify-center space-x-4">
+                    @if(request()->hasAny(['search', 'status', 'date_from', 'date_to']))
+                    <a href="{{ route('karyawan.dashboard') }}" 
+                       class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow hover:bg-blue-700">
+                        <i class="fas fa-times mr-2"></i> Hapus Filter
+                    </a>
+                    @endif
                     <a href="{{ route('karyawan.tickets.create') }}" 
                        class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow hover:bg-blue-700">
-                        <i class="fas fa-plus mr-2"></i> Buat Laporan Pertama
-                    </a>
-                    <a href="{{ route('karyawan.help') }}" 
-                       class="px-8 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">
-                        <i class="fas fa-question-circle mr-2"></i> Lihat Panduan
+                        <i class="fas fa-plus mr-2"></i> Buat Laporan
                     </a>
                 </div>
             </div>
@@ -1171,15 +1236,28 @@
 .dropdown-shadow {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
+
+/* FIXED: Ensure dropdown appears above content */
+#desktop-filter-dropdown {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+/* Ensure main content is below dropdown */
+#ticket-filter-container {
+    position: relative !important;
+    z-index: 9999 !important;
+}
 </style>
 
 <script>
-// Desktop Filter Dropdown
-const desktopFilterBtn = document.getElementById('desktop-filter-btn');
+// Desktop Filter Dropdown - NOW INSIDE TICKET SECTION
 const desktopFilterBtnHeader = document.getElementById('desktop-filter-btn-header');
 const desktopFilterDropdown = document.getElementById('desktop-filter-dropdown');
+const ticketFilterContainer = document.getElementById('ticket-filter-container');
 let isFilterOpen = false;
 
+// Function to toggle filter dropdown
 function toggleDesktopFilter() {
     if (isFilterOpen) {
         closeDesktopFilter();
@@ -1195,6 +1273,10 @@ function openDesktopFilter() {
     
     // Close other dropdowns
     closeQuickMenu();
+    
+    // Ensure dropdown is on top
+    desktopFilterDropdown.style.zIndex = '9999';
+    desktopFilterDropdown.style.position = 'absolute';
 }
 
 function closeDesktopFilter() {
@@ -1203,19 +1285,17 @@ function closeDesktopFilter() {
     isFilterOpen = false;
 }
 
-// Add event listeners for both filter buttons
-if (desktopFilterBtn) {
-    desktopFilterBtn.addEventListener('click', toggleDesktopFilter);
-}
-
+// Add event listener for filter button in ticket section
 if (desktopFilterBtnHeader) {
-    desktopFilterBtnHeader.addEventListener('click', toggleDesktopFilter);
+    desktopFilterBtnHeader.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDesktopFilter();
+    });
 }
 
 // Close filter dropdown when clicking outside
 document.addEventListener('click', function(event) {
-    const filterContainer = document.getElementById('filter-container');
-    if (isFilterOpen && filterContainer && !filterContainer.contains(event.target)) {
+    if (isFilterOpen && ticketFilterContainer && !ticketFilterContainer.contains(event.target)) {
         closeDesktopFilter();
     }
 });
@@ -1389,12 +1469,6 @@ document.addEventListener('click', function(e) {
         mobileQuickMenu && !mobileQuickMenu.contains(e.target) && 
         !quickActionsMenu.classList.contains('hidden')) {
         closeQuickMenu();
-    }
-    
-    if (desktopFilterModal && !desktopFilterModal.contains(e.target) && 
-        desktopFilter && !desktopFilter.contains(e.target) && 
-        !desktopFilterModal.classList.contains('hidden')) {
-        closeDesktopFilter();
     }
 });
 
