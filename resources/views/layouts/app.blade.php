@@ -256,7 +256,7 @@
                         <div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white"></div>
                     </div>
                     <div>
-                        <h1 class="font-heading text-xl font-bold text-gray-900">MANAGEMENT</h1>
+                        <h1 class="font-heading text-xl font-bold text-gray-900">SARIATER</h1>
                         <p class="text-xs text-blue-600 font-medium">IT SUPPORT SYSTEM</p>
                     </div>
                 </div>
